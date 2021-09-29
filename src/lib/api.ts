@@ -39,7 +39,9 @@ export const getRandomPicture = (
   userId: string,
   customFetch?: typeof fetch,
 ): Promise<Picture> =>
-  callApi(customFetch, '/pictures/random').then(res => res.json())
+  callApi(customFetch, `/pictures/random?userId=${userId}`).then(res =>
+    res.json(),
+  )
 
 export const getPicture = (
   pictureId: string,
