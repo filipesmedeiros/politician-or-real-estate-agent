@@ -92,9 +92,14 @@
     <h2>{$correct ? 'Certo!' : 'Errado!'}</h2>
     <h3>{Math.round(newCorrectPercentage * 100)}%</h3>
     <button on:click={getNextPicture}>Próxima imagem</button>
-    <a href={$picture.infoSource} target="_blank" on:click={stopAutoNext}>Fonte</a>
+    <a href={$picture.infoSource} target="_blank" on:click={stopAutoNext}
+      >Fonte</a
+    >
 
-    {#if autoNextPicture}<div class="progress-bar" class:correct={$correct} />{/if}
+    {#if autoNextPicture}<div
+        class="progress-bar"
+        class:correct={$correct}
+      />{/if}
   {/if}
 {/if}
 

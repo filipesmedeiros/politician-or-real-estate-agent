@@ -1,6 +1,5 @@
 import type { Picture, Profession } from '$lib/types'
 import { PICTURES } from '$lib/mocks/pictures'
-import { randomItemFromArray } from './utils/randomItemFromArray'
 
 export const callApi = (
   customFetch: typeof fetch | undefined,
@@ -20,7 +19,8 @@ export const vote = (
   customFetch?: typeof fetch,
 ): Promise<{ correct: boolean; newCorrectPercentage: number }> => {
   const picture = PICTURES.find(({ pictureId: id }) => pictureId === id)
-  if (picture === undefined) throw new Error('pictureNotFound')
+  if (picture === undefined)
+    throw new Error(`pictureNotFound - pictureId: ${pictureId}`)
 
   return new Promise(res =>
     res({
@@ -38,5 +38,11 @@ export const vote = (
 export const getRandomPicture = (
   userId: string,
   customFetch?: typeof fetch,
-): Promise<Picture> => new Promise(res => res(randomItemFromArray(PICTURES)))
-// callApi(customFetch, '/pictures/random').then(res => res.json())
+): Promise<Picture> =>
+  callApi(customFetch, '/pictures/random').then(res => res.json())
+
+export const getPicture = (
+  pictureId: string,
+  customFetch?: typeof fetch,
+): Promise<Picture> =>
+  callApi(customFetch, `/pictures/${pictureId}`).then(res => res.json())

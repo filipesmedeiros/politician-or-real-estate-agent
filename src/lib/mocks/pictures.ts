@@ -1,9 +1,7 @@
-import { v4 as uuid } from 'uuid'
-
 import type { Picture } from '$lib/types'
 
 const MALE_POLITICIAN: Picture = {
-  pictureId: uuid(),
+  pictureId: '95bf77e9-5198-475c-8476-76d825e928f5',
   imageUrl:
     'https://www.expressofelgueiras.com/wp-content/uploads/2021/06/amandio-serrano-chega-felgueiras-2-678x381.jpg',
   infoSource:
@@ -14,7 +12,7 @@ const MALE_POLITICIAN: Picture = {
 }
 
 const FEMALE_POLITICIAN: Picture = {
-  pictureId: uuid(),
+  pictureId: 'e0592e43-2232-4ba7-8967-1476f8da07f2',
   imageUrl:
     'https://pressminho.b-cdn.net/2021/08/Joana-quintela-movimento-51-ponte-de-lima.png',
   infoSource:
@@ -25,7 +23,7 @@ const FEMALE_POLITICIAN: Picture = {
 }
 
 const FEMALE_AGENT: Picture = {
-  pictureId: uuid(),
+  pictureId: 'a34ebcc1-f7ae-461b-b988-9d4bcc4bffc4',
   imageUrl:
     'https://media-exp1.licdn.com/dms/image/C4E03AQGtuDKwUMKjxg/profile-displayphoto-shrink_800_800/0/1607442320837?e=1638403200&v=beta&t=76H_vYNb-91aOvApBiwIqYsP19YBsIXGL5E7BXIvVR0',
   infoSource: 'https://www.linkedin.com/in/sara-martins-b8941930/',
@@ -35,7 +33,7 @@ const FEMALE_AGENT: Picture = {
 }
 
 const MALE_AGENT: Picture = {
-  pictureId: uuid(),
+  pictureId: 'c34d26f4-07c6-4e24-a647-4cc981e7f6e2',
   imageUrl:
     'https://scontent.flis8-2.fna.fbcdn.net/v/t1.6435-9/170748070_108416934690702_1766689405262464191_n.jpg?_nc_cat=100&ccb=1-5&_nc_sid=09cbfe&_nc_ohc=MjMAK5ofXfEAX8NSj1W&_nc_ht=scontent.flis8-2.fna&oh=0f0cb26b2a2c6b1dff13fa9ba34f81c2&oe=6174A7A5',
   infoSource:
