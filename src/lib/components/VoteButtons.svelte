@@ -52,10 +52,18 @@
   }
 
   .vote-agent {
-    background: linear-gradient(45deg, rgb(15, 47, 153) 0%, rgba(0, 212, 255, 1) 100%);
+    background: linear-gradient(
+      45deg,
+      rgb(15, 47, 153) 0%,
+      rgba(0, 212, 255, 1) 100%
+    );
   }
 
   .vote-politician {
-    background: linear-gradient(45deg, rgb(255, 60, 0) 0%, rgb(153, 15, 15) 100%);
+    background: linear-gradient(
+      45deg,
+      rgb(255, 60, 0) 0%,
+      rgb(153, 15, 15) 100%
+    );
   }
 </style>
