@@ -1,14 +1,23 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { writable, derived } from 'svelte/store'
+  import { writable, derived, get } from 'svelte/store'
 
-  import { getRandomPicture, vote } from '$lib/api'
   import type { Picture, Profession } from '$lib/types'
+  import { getRandomPictureIds, vote, getPicture } from '$lib/api'
   import VoteButtons from '$lib/components/VoteButtons.svelte'
   import getUserId from '$lib/utils/getUserId'
   import { prefetchImg } from '$lib/utils/prefetchImg'
 
+  let nextPictureIds = writable<string[]>([])
   let picture = writable<Picture>()
+  let nextPicture: Picture
+  let noAvailablePictures = derived(
+    [nextPictureIds],
+    ([nextPictureIds]) =>
+      nextPictureIds !== undefined && nextPictureIds.length === 0,
+  )
+  let shouldRequestNewPictureIds = true
+
   let userId = writable<string>()
   let loading = derived(
     [picture, userId],
@@ -17,41 +26,57 @@
   let correct = writable<boolean | undefined>(undefined)
   let readyToVote = derived(correct, correct => correct === undefined)
   let newCorrectPercentage: number
-  let autoNextPicture = true
-  let nextPictureTimeout: NodeJS.Timeout
-  let nextPicture: Picture
+  let nextPictureTimeout = writable<NodeJS.Timeout | undefined>()
+  let showProgressBar = derived(
+    [nextPictureTimeout],
+    ([nextPictureTimeout]) => nextPictureTimeout !== undefined,
+  )
 
-  const getRandomPictureForUser = () =>
-    getRandomPicture($userId).then(randomPicture => {
-      $picture = randomPicture
-    })
+  const appendNewPictureIds = async () => {
+    if ($nextPictureIds.length > 2 || !shouldRequestNewPictureIds) return
+
+    const morePictureIds = await getRandomPictureIds($userId)
+
+    if (morePictureIds.length > 0)
+      nextPictureIds.update(curr => [...curr, ...morePictureIds])
+    else shouldRequestNewPictureIds = false
+  }
 
   const prefetchNextPicture = async () => {
-    const randomPicture = await getRandomPicture($userId)
-    prefetchImg(randomPicture.imageUrl)
-    nextPicture = randomPicture
+    await appendNewPictureIds()
+
+    if ($nextPictureIds.length > 0) {
+      nextPicture = await getPicture($nextPictureIds.pop()!)
+      prefetchImg(nextPicture.imageUrl)
+      console.log({ nextPic: nextPicture.imageUrl, currPic: $picture.imageUrl })
+    }
   }
 
   onMount(async () => {
     $userId = getUserId()
+
+    await appendNewPictureIds()
+
+    if ($nextPictureIds.length > 0) {
+      $picture = await getPicture($nextPictureIds.pop()!)
+    }
+
     prefetchNextPicture()
-    await getRandomPictureForUser()
   })
 
-  $: {
-    if (!autoNextPicture && nextPictureTimeout !== undefined)
-      clearTimeout(nextPictureTimeout)
-  }
-
   const getNextPicture = async () => {
+    stopAutoNext()
     $picture = nextPicture
     $correct = undefined
-    autoNextPicture = true
+
     prefetchNextPicture()
   }
 
   const stopAutoNext = () => {
-    autoNextPicture = false
+    if ($nextPictureTimeout !== undefined) {
+      clearTimeout($nextPictureTimeout)
+      $nextPictureTimeout = undefined
+    }
   }
 
   const voteOnPicture = async (profession: Profession) => {
@@ -64,7 +89,7 @@
     $correct = result.correct
     newCorrectPercentage = result.newCorrectPercentage
 
-    nextPictureTimeout = setTimeout(getNextPicture, 5e3)
+    $nextPictureTimeout = setTimeout(getNextPicture, 5e3)
   }
 </script>
 
@@ -77,6 +102,8 @@
 </h1>
 {#if $loading}
   Loading
+{:else if $noAvailablePictures}
+  No more available pictures
 {:else}
   <div>
     <img class="image" src={$picture.imageUrl} alt="person to vote on" />
@@ -96,7 +123,7 @@
       >Fonte</a
     >
 
-    {#if autoNextPicture}<div
+    {#if $showProgressBar}<div
         class="progress-bar"
         class:correct={$correct}
       />{/if}

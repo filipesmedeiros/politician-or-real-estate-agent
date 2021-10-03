@@ -43,9 +43,4 @@ const MALE_AGENT: Picture = {
   profession: 'agent',
 }
 
-export const PICTURES = [
-  MALE_AGENT,
-  FEMALE_AGENT,
-  FEMALE_POLITICIAN,
-  MALE_POLITICIAN,
-]
+export default [MALE_AGENT, FEMALE_AGENT, FEMALE_POLITICIAN, MALE_POLITICIAN]

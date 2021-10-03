@@ -1,23 +1,21 @@
 import type { RequestHandler } from '@sveltejs/kit'
 
-import { PICTURES } from '$lib/mocks/pictures'
 import type { Profession } from '$lib/types'
-import { USERS } from '$lib/mocks/users'
+import PICTURES from '$lib/mocks/pictures'
+import USERS from '$lib/mocks/users'
 import { PROFESSIONS } from '$lib/constants'
 
-export const post: RequestHandler = async ({ body }) => {
-  if (typeof body !== 'string') {
-    return { status: 400 }
-  }
-  const { pictureId, userId, profession } = JSON.parse(body) as {
-    pictureId: string
+export const post: RequestHandler<
+  null,
+  {
     userId: string
     profession: Profession
   }
-
-  if (pictureId === undefined) {
+> = async ({ body, params: { pictureId } }) => {
+  if (body === undefined) {
     return { status: 400 }
   }
+  const { userId, profession } = body
 
   if (userId === undefined) {
     return { status: 401 }
@@ -26,6 +24,7 @@ export const post: RequestHandler = async ({ body }) => {
   const picture = PICTURES.find(pic => pic.pictureId === pictureId)
 
   if (picture === undefined) {
+    console.log('picture')
     return { status: 400 }
   }
 
@@ -37,6 +36,7 @@ export const post: RequestHandler = async ({ body }) => {
   }
 
   if (!PROFESSIONS.includes(profession)) {
+    console.log('profession')
     return { status: 400 }
   }
 

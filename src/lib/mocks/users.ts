@@ -22,4 +22,4 @@ const USER_MEDEIROS: User = {
   ],
 }
 
-export const USERS = [USER_MARTINS, USER_MEDEIROS]
+export default [USER_MARTINS, USER_MEDEIROS]

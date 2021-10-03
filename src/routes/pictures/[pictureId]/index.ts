@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit'
 
-import { PICTURES } from '$lib/mocks/pictures'
+import PICTURES from '$lib/mocks/pictures'
 
 // TODO: contribute to the types (output type seems to be wrong)
 // docs: https://kit.svelte.dev/docs#routing-endpoints
