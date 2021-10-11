@@ -7,7 +7,7 @@ import PICTURES from '$lib/mocks/pictures'
 export const get: RequestHandler = async ({ params: { pictureId } }) => {
   // `find` docs https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
   // TODO: replace with database lookup
-  const picture = PICTURES.find(pic => pic.pictureId === pictureId)
+  const picture = PICTURES.find(pic => pic.itemId === pictureId)
 
   if (picture === undefined)
     return {

@@ -21,8 +21,8 @@ export const get: RequestHandler = async ({ query }) => {
     return { status: 401 }
   }
 
-  const userVotedOnSet = new Set(user.votes.map(({ pictureId }) => pictureId))
-  const allPictureIdsSet = new Set(PICTURES.map(({ pictureId }) => pictureId))
+  const userVotedOnSet = new Set(user.votes.map(({ itemId }) => itemId))
+  const allPictureIdsSet = new Set(PICTURES.map(({ itemId }) => itemId))
   const validPictureIdsSet = setMinus(allPictureIdsSet, userVotedOnSet)
 
   const validPictureIds: string[] = []

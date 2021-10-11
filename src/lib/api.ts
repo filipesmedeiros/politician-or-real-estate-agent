@@ -1,4 +1,4 @@
-import type { Picture, Profession } from '$lib/types'
+import type { ContentType, Item, ItemTheme } from '$lib/types'
 
 export const callApi = (
   customFetch: typeof fetch | undefined,
@@ -10,20 +10,15 @@ export const callApi = (
   })
 
 export const vote = (
-  {
-    pictureId,
-    profession,
-    userId,
-  }: { pictureId: string; profession: Profession; userId: string },
+  { itemId, team, userId }: { itemId: string; team: string; userId: string },
   customFetch?: typeof fetch,
 ): Promise<{ correct: boolean; newCorrectPercentage: number }> =>
-  callApi(customFetch, `/pictures/${pictureId}/vote`, {
+  callApi(customFetch, `/items/${itemId}/vote`, {
     method: 'POST',
-    headers: [['Content-Type', 'application/json']],
-    body: JSON.stringify({ userId, profession }),
+    body: JSON.stringify({ userId, team }),
   }).then(res => res.json())
 
-export const getRandomPictureIds = (
+export const getRandomItemIds = (
   userId: string,
   limit = 20,
   customFetch?: typeof fetch,
@@ -32,8 +27,11 @@ export const getRandomPictureIds = (
     res => res.json(),
   )
 
-export const getPicture = (
-  pictureId: string,
+export const getItem = <
+  Type extends ContentType = 'image',
+  Theme extends ItemTheme = 'politician-x-real-estate-agent',
+>(
+  itemId: string,
   customFetch?: typeof fetch,
-): Promise<Picture> =>
-  callApi(customFetch, `/pictures/${pictureId}`).then(res => res.json())
+): Promise<Item<Type, Theme>> =>
+  callApi(customFetch, `/pictures/${itemId}`).then(res => res.json())

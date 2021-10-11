@@ -2,15 +2,15 @@
   import { onMount } from 'svelte'
   import { writable, derived, get } from 'svelte/store'
 
-  import type { Picture, Profession } from '$lib/types'
-  import { getRandomPictureIds, vote, getPicture } from '$lib/api'
+  import type { Item, ThemeTeams } from '$lib/types'
+  import { getRandomItemIds, vote, getItem } from '$lib/api'
   import VoteButtons from '$lib/components/VoteButtons.svelte'
   import getUserId from '$lib/utils/getUserId'
   import { prefetchImg } from '$lib/utils/prefetchImg'
 
   let nextPictureIds = writable<string[]>([])
-  let picture = writable<Picture>()
-  let nextPicture: Picture
+  let picture = writable<Item<'image', 'politician-x-real-estate-agent'>>()
+  let nextPicture: Item<'image', 'politician-x-real-estate-agent'>
   let noAvailablePictures = derived(
     [nextPictureIds],
     ([nextPictureIds]) =>
@@ -35,7 +35,7 @@
   const appendNewPictureIds = async () => {
     if ($nextPictureIds.length > 2 || !shouldRequestNewPictureIds) return
 
-    const morePictureIds = await getRandomPictureIds($userId)
+    const morePictureIds = await getRandomItemIds($userId)
 
     if (morePictureIds.length > 0)
       nextPictureIds.update(curr => [...curr, ...morePictureIds])
@@ -46,9 +46,8 @@
     await appendNewPictureIds()
 
     if ($nextPictureIds.length > 0) {
-      nextPicture = await getPicture($nextPictureIds.pop()!)
-      prefetchImg(nextPicture.imageUrl)
-      console.log({ nextPic: nextPicture.imageUrl, currPic: $picture.imageUrl })
+      nextPicture = await getItem($nextPictureIds.pop()!)
+      prefetchImg(nextPicture.content.imageUrl)
     }
   }
 
@@ -58,7 +57,7 @@
     await appendNewPictureIds()
 
     if ($nextPictureIds.length > 0) {
-      $picture = await getPicture($nextPictureIds.pop()!)
+      $picture = await getItem($nextPictureIds.pop()!)
     }
 
     prefetchNextPicture()
@@ -79,10 +78,12 @@
     }
   }
 
-  const voteOnPicture = async (profession: Profession) => {
+  const voteOnPicture = async (
+    team: ThemeTeams<'politician-x-real-estate-agent'>,
+  ) => {
     const result = await vote({
-      pictureId: $picture.pictureId,
-      profession,
+      itemId: $picture.itemId,
+      team,
       userId: $userId,
     })
 
@@ -106,22 +107,24 @@
   No more available pictures
 {:else}
   <div>
-    <img class="image" src={$picture.imageUrl} alt="person to vote on" />
+    <img
+      class="image"
+      src={$picture.content.imageUrl}
+      alt="person to vote on"
+    />
   </div>
 
   {#if $readyToVote}
     <VoteButtons
       voteForAgent={() => voteOnPicture('agent')}
       voteForPolitician={() => voteOnPicture('politician')}
-      gender={$picture.gender}
+      gender={$picture.themeInfo.gender}
     />
   {:else}
     <h2>{$correct ? 'Certo!' : 'Errado!'}</h2>
     <h3>{Math.round(newCorrectPercentage * 100)}%</h3>
     <button on:click={getNextPicture}>Próxima imagem</button>
-    <a href={$picture.infoSource} target="_blank" on:click={stopAutoNext}
-      >Fonte</a
-    >
+    <a href={$picture.source} target="_blank" on:click={stopAutoNext}>Fonte</a>
 
     {#if $showProgressBar}<div
         class="progress-bar"
