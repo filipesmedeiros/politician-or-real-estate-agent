@@ -1,30 +1,27 @@
 import type { RequestHandler } from '@sveltejs/kit'
 
-import type { Profession } from '$lib/types'
 import PICTURES from '$lib/mocks/pictures'
 import USERS from '$lib/mocks/users'
-import { PROFESSIONS } from '$lib/constants'
 
 export const post: RequestHandler<
   null,
   {
     userId: string
-    profession: Profession
+    team: string
   }
-> = async ({ body, params: { pictureId } }) => {
+> = async ({ body, params: { itemId } }) => {
   if (body === undefined) {
     return { status: 400 }
   }
-  const { userId, profession } = body
+  const { userId, team } = body
 
   if (userId === undefined) {
     return { status: 401 }
   }
   // TODO: change to go to database
-  const picture = PICTURES.find(pic => pic.pictureId === pictureId)
+  const item = PICTURES.find(pic => pic.itemId === itemId)
 
-  if (picture === undefined) {
-    console.log('picture')
+  if (item === undefined) {
     return { status: 400 }
   }
 
@@ -35,19 +32,14 @@ export const post: RequestHandler<
     return { status: 401 }
   }
 
-  if (!PROFESSIONS.includes(profession)) {
-    console.log('profession')
-    return { status: 400 }
-  }
-
-  if (user.votes.some(vote => vote.pictureId === pictureId)) {
+  if (user.votes.some(vote => vote.itemId === itemId)) {
     return { status: 403 }
   }
 
   return {
     body: {
-      correct: picture.profession === profession,
-      newCorrectPercentage: picture.correctPercentage,
+      correct: item.team === team,
+      newCorrectPercentage: item.correctPercentage,
     },
   }
 }
